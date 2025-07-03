@@ -1,5 +1,7 @@
 # Interval timer cli
 
+## 要件
+
 Typescript + Node.js + Ink (React でCLIツールを作成するライブラリ)
 を組みわせて、インターバルトレーニングタイマーを作成します
 
@@ -13,3 +15,9 @@ Typescript + Node.js + Ink (React でCLIツールを作成するライブラリ)
   - タイムアウト時には `/System/Library/Sounds/Sosumi.aiff` を鳴らす
 - 実行中、ターミナルには大きな数字のアスキーアートで残り秒数が表示される
   - カウントダウン事に秒数を更新する
+
+
+## 使用するライブラリ
+
+https://github.com/vadimdemedes/ink
+上記の Github リポジトリを把握し、 ink ライブラリの使い方を把握しつつ実装してください
