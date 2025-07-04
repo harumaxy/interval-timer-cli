@@ -1,15 +1,22 @@
 # interval-timer-cli
 
-To install dependencies:
+Confirmed on
+- MacOS 15.5
+- bun v1.2.17
 
-```bash
-bun install
+Executable distribution is work in progress...
+
+## Usage
+
+Clone this repo and run followings.
+
+```sh
+bun hiit # interactive mode
+
+# options
+bun hiit --move 30s --rest 30s --set 10                                                                                            
+bun hiit -m 30 -r 30 -s 10
+
+# pomodoro
+bun hiit -m 25 -r 5 set 4
 ```
-
-To run:
-
-```bash
-bun run index.ts
-```
-
-This project was created using `bun init` in bun v1.2.17. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
