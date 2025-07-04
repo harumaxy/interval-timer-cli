@@ -10,6 +10,18 @@ export interface InteractiveModeProps {
 	}) => void;
 }
 
+function parseTimeInput(input: string): number {
+	const trimmed = input.trim();
+	if (trimmed.endsWith('m')) {
+		const minutes = parseInt(trimmed.slice(0, -1));
+		return minutes * 60;
+	} else if (trimmed.endsWith('s')) {
+		return parseInt(trimmed.slice(0, -1));
+	} else {
+		return parseInt(trimmed);
+	}
+}
+
 export function InteractiveMode({ onStart }: InteractiveModeProps) {
 	const [step, setStep] = useState(0);
 	const [moveTime, setMoveTime] = useState("");
@@ -18,11 +30,11 @@ export function InteractiveMode({ onStart }: InteractiveModeProps) {
 
 	const steps = [
 		{
-			label: "Movement time (seconds)",
+			label: "Movement time (e.g., 30, 30s, 2m)",
 			value: moveTime,
 			setValue: setMoveTime,
 		},
-		{ label: "Rest time (seconds)", value: restTime, setValue: setRestTime },
+		{ label: "Rest time (e.g., 10, 10s, 1m)", value: restTime, setValue: setRestTime },
 		{ label: "Number of sets", value: sets, setValue: setSets },
 	];
 
@@ -39,8 +51,8 @@ export function InteractiveMode({ onStart }: InteractiveModeProps) {
 			setStep(step + 1);
 		} else {
 			onStart({
-				moveTime: parseInt(moveTime),
-				restTime: parseInt(restTime),
+				moveTime: parseTimeInput(moveTime),
+				restTime: parseTimeInput(restTime),
 				sets: parseInt(sets),
 			});
 		}
@@ -50,6 +62,21 @@ export function InteractiveMode({ onStart }: InteractiveModeProps) {
 		<Box flexDirection="column" padding={1}>
 			<Text>HIIT Timer Setup</Text>
 			<Text></Text>
+			
+			{/* Display all previous steps with their answers */}
+			{steps.map((s, index) => {
+				if (index < step) {
+					return (
+						<Box key={`step-${index}-${s.label}`} marginBottom={1}>
+							<Text color="gray">{s.label}: </Text>
+							<Text color="green">{s.value}</Text>
+						</Box>
+					);
+				}
+				return null;
+			})}
+			
+			{/* Current step input */}
 			<Box>
 				<Text>{currentStep.label}: </Text>
 				<TextInput
