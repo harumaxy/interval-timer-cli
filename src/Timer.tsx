@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { Box, Text, useInput, useApp } from "ink";
-import figlet from "figlet";
 import { exec } from "child_process";
+import figlet from "figlet";
+import { Box, Text, useApp, useInput } from "ink";
+import { useEffect, useState } from "react";
 
 export interface TimerProps {
 	moveTime: number;
@@ -10,6 +10,14 @@ export interface TimerProps {
 }
 
 type TimerState = "move" | "rest" | "finished";
+
+const playSound = (soundPath: string) => {
+	exec(`afplay "${soundPath}"`, (error) => {
+		if (error) {
+			console.error("Error playing sound:", error);
+		}
+	});
+};
 
 export function Timer({ moveTime, restTime, sets }: TimerProps) {
 	const [currentSet, setCurrentSet] = useState(1);
@@ -34,7 +42,7 @@ export function Timer({ moveTime, restTime, sets }: TimerProps) {
 			setTimeLeft((prev) => {
 				if (prev <= 1) {
 					playSound("/System/Library/Sounds/Glass.aiff");
-					
+
 					if (currentState === "move") {
 						setCurrentState("rest");
 						return restTime;
@@ -60,14 +68,6 @@ export function Timer({ moveTime, restTime, sets }: TimerProps) {
 
 		return () => clearInterval(interval);
 	}, [isActive, currentState, currentSet, sets, moveTime, restTime]);
-
-	const playSound = (soundPath: string) => {
-		exec(`afplay "${soundPath}"`, (error) => {
-			if (error) {
-				console.error("Error playing sound:", error);
-			}
-		});
-	};
 
 	const formatTime = (seconds: number): string => {
 		const mins = Math.floor(seconds / 60);
@@ -113,7 +113,7 @@ export function Timer({ moveTime, restTime, sets }: TimerProps) {
 	const timeDisplay = figlet.textSync(formatTime(timeLeft), {
 		font: "Standard",
 		horizontalLayout: "default",
-		verticalLayout: "default"
+		verticalLayout: "default",
 	});
 
 	return (
@@ -125,7 +125,8 @@ export function Timer({ moveTime, restTime, sets }: TimerProps) {
 			<Text color={getStateColor()}>{timeDisplay}</Text>
 			<Text></Text>
 			<Text color="gray">
-				{isActive ? "Press SPACE to pause" : "Press SPACE to resume"} • Press ESC or 'q' to quit
+				{isActive ? "Press SPACE to pause" : "Press SPACE to resume"} • Press
+				ESC or 'q' to quit
 			</Text>
 		</Box>
 	);

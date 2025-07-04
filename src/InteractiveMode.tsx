@@ -1,9 +1,13 @@
-import React, { useState } from "react";
 import { Box, Text } from "ink";
 import TextInput from "ink-text-input";
+import { useState } from "react";
 
 export interface InteractiveModeProps {
-	onStart: (params: { moveTime: number; restTime: number; sets: number }) => void;
+	onStart: (params: {
+		moveTime: number;
+		restTime: number;
+		sets: number;
+	}) => void;
 }
 
 export function InteractiveMode({ onStart }: InteractiveModeProps) {
@@ -13,23 +17,31 @@ export function InteractiveMode({ onStart }: InteractiveModeProps) {
 	const [sets, setSets] = useState("");
 
 	const steps = [
-		{ label: "Movement time (seconds)", value: moveTime, setValue: setMoveTime },
+		{
+			label: "Movement time (seconds)",
+			value: moveTime,
+			setValue: setMoveTime,
+		},
 		{ label: "Rest time (seconds)", value: restTime, setValue: setRestTime },
-		{ label: "Number of sets", value: sets, setValue: setSets }
+		{ label: "Number of sets", value: sets, setValue: setSets },
 	];
 
 	const currentStep = steps[step];
 
+	if (!currentStep) {
+		return <Text>Error: Invalid step</Text>;
+	}
+
 	const handleSubmit = (value: string) => {
 		currentStep.setValue(value);
-		
+
 		if (step < steps.length - 1) {
 			setStep(step + 1);
 		} else {
 			onStart({
 				moveTime: parseInt(moveTime),
 				restTime: parseInt(restTime),
-				sets: parseInt(sets)
+				sets: parseInt(sets),
 			});
 		}
 	};

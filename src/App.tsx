@@ -1,5 +1,5 @@
-import React, { useState } from "react";
 import { Text } from "ink";
+import { useState } from "react";
 import { InteractiveMode } from "./InteractiveMode.js";
 import { Timer } from "./Timer.js";
 
@@ -10,7 +10,9 @@ export interface AppProps {
 }
 
 export function App({ moveTime, restTime, sets }: AppProps) {
-	const [isInteractive, setIsInteractive] = useState(!moveTime || !restTime || !sets);
+	const [isInteractive, setIsInteractive] = useState(
+		!moveTime || !restTime || !sets,
+	);
 	const [timerParams, setTimerParams] = useState<{
 		moveTime: number;
 		restTime: number;
