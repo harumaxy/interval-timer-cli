@@ -1,6 +1,7 @@
 import { Box, Text } from "ink";
 import TextInput from "ink-text-input";
 import { useState } from "react";
+import { parseTimeInput, isValidTimeInput, isValidNumberInput } from "./utils.js";
 
 export interface InteractiveModeProps {
 	onStart: (params: {
@@ -10,32 +11,32 @@ export interface InteractiveModeProps {
 	}) => void;
 }
 
-function parseTimeInput(input: string): number {
-	const trimmed = input.trim();
-	if (trimmed.endsWith('m')) {
-		const minutes = parseInt(trimmed.slice(0, -1));
-		return minutes * 60;
-	} else if (trimmed.endsWith('s')) {
-		return parseInt(trimmed.slice(0, -1));
-	} else {
-		return parseInt(trimmed);
-	}
-}
-
 export function InteractiveMode({ onStart }: InteractiveModeProps) {
 	const [step, setStep] = useState(0);
 	const [moveTime, setMoveTime] = useState("");
 	const [restTime, setRestTime] = useState("");
 	const [sets, setSets] = useState("");
+	const [error, setError] = useState("");
 
 	const steps = [
 		{
 			label: "Movement time (e.g., 30, 30s, 2m)",
 			value: moveTime,
 			setValue: setMoveTime,
+			validate: isValidTimeInput,
 		},
-		{ label: "Rest time (e.g., 10, 10s, 1m)", value: restTime, setValue: setRestTime },
-		{ label: "Number of sets", value: sets, setValue: setSets },
+		{ 
+			label: "Rest time (e.g., 10, 10s, 1m)", 
+			value: restTime, 
+			setValue: setRestTime,
+			validate: isValidTimeInput,
+		},
+		{ 
+			label: "Number of sets", 
+			value: sets, 
+			setValue: setSets,
+			validate: isValidNumberInput,
+		},
 	];
 
 	const currentStep = steps[step];
@@ -45,6 +46,12 @@ export function InteractiveMode({ onStart }: InteractiveModeProps) {
 	}
 
 	const handleSubmit = (value: string) => {
+		if (!currentStep.validate(value)) {
+			setError(`Invalid input: ${currentStep.label.toLowerCase()} must be a positive number`);
+			return;
+		}
+		
+		setError("");
 		currentStep.setValue(value);
 
 		if (step < steps.length - 1) {
@@ -85,6 +92,13 @@ export function InteractiveMode({ onStart }: InteractiveModeProps) {
 					onSubmit={handleSubmit}
 				/>
 			</Box>
+			
+			{/* Error message */}
+			{error && (
+				<Box marginTop={1}>
+					<Text color="red">{error}</Text>
+				</Box>
+			)}
 		</Box>
 	);
 }

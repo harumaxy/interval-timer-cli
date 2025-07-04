@@ -1,7 +1,7 @@
 import { exec } from "child_process";
 import figlet from "figlet";
 import { Box, Text, useApp, useInput } from "ink";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export interface TimerProps {
 	moveTime: number;
@@ -25,9 +25,14 @@ export function Timer({ moveTime, restTime, sets }: TimerProps) {
 	const [timeLeft, setTimeLeft] = useState(moveTime);
 	const [isActive, setIsActive] = useState(true);
 	const { exit } = useApp();
+	const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
 	useInput((input, key) => {
 		if (key.escape || input === "q") {
+			if (intervalRef.current) {
+				clearInterval(intervalRef.current);
+				intervalRef.current = null;
+			}
 			exit();
 		}
 		if (input === " ") {
@@ -36,9 +41,15 @@ export function Timer({ moveTime, restTime, sets }: TimerProps) {
 	});
 
 	useEffect(() => {
-		if (!isActive) return;
+		if (!isActive) {
+			if (intervalRef.current) {
+				clearInterval(intervalRef.current);
+				intervalRef.current = null;
+			}
+			return;
+		}
 
-		const interval = setInterval(() => {
+		intervalRef.current = setInterval(() => {
 			setTimeLeft((prev) => {
 				if (prev <= 1) {
 					playSound("/System/Library/Sounds/Glass.aiff");
@@ -66,7 +77,12 @@ export function Timer({ moveTime, restTime, sets }: TimerProps) {
 			});
 		}, 1000);
 
-		return () => clearInterval(interval);
+		return () => {
+			if (intervalRef.current) {
+				clearInterval(intervalRef.current);
+				intervalRef.current = null;
+			}
+		};
 	}, [isActive, currentState, currentSet, sets, moveTime, restTime]);
 
 	const formatTime = (seconds: number): string => {
