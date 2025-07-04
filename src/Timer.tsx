@@ -112,8 +112,8 @@ export function Timer({ moveTime, restTime, sets }: TimerProps) {
 
 	const timeDisplay = figlet.textSync(formatTime(timeLeft), {
 		font: "Standard",
-		horizontalLayout: "default",
-		verticalLayout: "default",
+		horizontalLayout: "full",
+		verticalLayout: "full",
 	});
 
 	return (
